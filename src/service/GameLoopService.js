@@ -82,8 +82,8 @@ $Component({
             answer: formattedAnswer,
             failedAttempts,
             maxFailedAttempts: guessCount,
+            previousIncorrectChoices,
           });
-          IO_SERVICE.display(`Previous guesses: ${previousIncorrectChoices.join(", ")}\n`);
 
           IO_SERVICE.io({
             message: "Guess a letter or a word.\n",
@@ -103,6 +103,7 @@ $Component({
             answer: formattedAnswer,
             failedAttempts,
             maxFailedAttempts: guessCount,
+            previousIncorrectChoices,
           });
           displayGameEndReason(IO_SERVICE)(
             failedAttempts,

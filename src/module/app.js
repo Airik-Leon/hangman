@@ -13,17 +13,18 @@ const showBanner = (ioservice) => {
   );
 };
 
-const getGreetingMessage = () => {
-  return `Hangman is a 2 player game where the first player chooses a word & number of guesses and the second player must attempt to guess the word before they reach the number of guesses.
+//TODO: Move to readme. 
+// const getGreetingMessage = () => {
+//   return `Hangman is a 2 player game where the first player chooses a word & number of guesses and the second player must attempt to guess the word before they reach the number of guesses.
 
-  \n - Player one please choose a guess count greater than 0. 
-  \n - Player one please choose a word that exist in a common dictionary.
+//   \n - Player one please choose a guess count greater than 0. 
+//   \n - Player one please choose a word that exist in a common dictionary.
   
-  \n - Player 2 may either guess an individual letter or attempt to guess a whole word.
-  \n - If Player 2 guesses the whole word then Player 2 wins. 
-  \n - If Player 2 guesses a letter then that will reveal all the matching letters for that word. 
-  `;
-};
+//   \n - Player 2 may either guess an individual letter or attempt to guess a whole word.
+//   \n - If Player 2 guesses the whole word then Player 2 wins. 
+//   \n - If Player 2 guesses a letter then that will reveal all the matching letters for that word. 
+//   `;
+// };
 
 const getWordFromIO = (io) => (dictionaryService) => async (message) => {
   return io.repeatQuestionTillConditionMet(
@@ -48,7 +49,7 @@ const getGuessCountFromIO = (io) => {
 const onStartGame = (ioservice) => (eventService) => (dictionaryService) => {
   showBanner(ioservice);
   ioservice.io({
-    message: `${getGreetingMessage()}\nWould you like to play (Y/n)?\n`,
+    message: `Would you like to play (Y/n)?\n`,
     listener: async (line = "") => {
       if (line.toLowerCase() === "y") {
         const word = await getWordFromIO(ioservice)(dictionaryService)(

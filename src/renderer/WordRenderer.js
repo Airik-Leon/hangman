@@ -16,6 +16,7 @@ $Component({
         })
         .join(" ");
       IO_SERVICE.display(word);
+      IO_SERVICE.display(`Previous guesses: ${data.previousIncorrectChoices.join(", ")}\n`);
     };
 
     EVENT_SERVICE.subscribe("refresh", render);
