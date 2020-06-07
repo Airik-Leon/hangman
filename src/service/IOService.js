@@ -32,9 +32,9 @@ $Component({
     };
 
     const repeatQuestionTillConditionMet = (
-      message,
+      message = "",
       evaluateCondition,
-      onFailMessage
+      onFailMessage = "",
     ) => {
       return new Promise((resolve) => {
         const repeat = (displayMessage) => {
@@ -62,6 +62,7 @@ $Component({
       io,
       display,
       setReservedKeyEvents,
+      clear: console.clear,
       repeatQuestionTillConditionMet,
     };
   },

@@ -1,6 +1,26 @@
 const { $Component } = require("boost_library");
 const Interface = require("../module/Interface");
 
+const displayGameEndReason = (ioservice) => (
+  failedAttempts,
+  guesscount,
+  formattedAnswers
+) => {
+  if (failedAttempts >= guesscount) {
+    ioservice.display(
+      `Player 2 has reached the number of allowed guesses: ${failedAttempts}/${guesscount}`
+    );
+  }
+
+  if (formattedAnswers.every((answer) => answer.show)) {
+    ioservice.display(
+      `Congratulations player 2 you have guessed the correct answer: ${formattedAnswers
+        .map((v) => v.value)
+        .join("")}`
+    );
+  }
+};
+
 $Component({
   key: Interface.GAME_LOOP_SERVICE,
   name: "gameloop.service.v1",
@@ -13,6 +33,7 @@ $Component({
   injector: ({ EVENT_SERVICE, IO_SERVICE }) => {
     let failedAttempts = 0;
     let formattedAnswer = null;
+    const previousIncorrectChoices = [];
 
     const getLineChecker = (answer) => ({
       checkForCorrectnessAndUpdate: (line = "") => {
@@ -56,11 +77,13 @@ $Component({
           failedAttempts < guessCount &&
           formattedAnswer.some((value) => !value.show)
         ) {
+          IO_SERVICE.clear();
           EVENT_SERVICE.publish("refresh", {
             answer: formattedAnswer,
             failedAttempts,
             maxFailedAttempts: guessCount,
           });
+          IO_SERVICE.display(`Previous guesses: ${previousIncorrectChoices.join(", ")}\n`);
 
           IO_SERVICE.io({
             message: "Guess a letter or a word.\n",
@@ -69,12 +92,23 @@ $Component({
                 line
               );
               if (!isACorrectGuess) {
+                previousIncorrectChoices.push(line);
                 failedAttempts = failedAttempts + 1;
               }
               repeatIfEndHasNotBeenMet();
             },
           });
         } else {
+          EVENT_SERVICE.publish("refresh", {
+            answer: formattedAnswer,
+            failedAttempts,
+            maxFailedAttempts: guessCount,
+          });
+          displayGameEndReason(IO_SERVICE)(
+            failedAttempts,
+            guessCount,
+            formattedAnswer
+          );
           process.exit(0);
         }
       };

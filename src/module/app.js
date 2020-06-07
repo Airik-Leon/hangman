@@ -26,9 +26,13 @@ const getGreetingMessage = () => {
 };
 
 const getWordFromIO = (io) => (dictionaryService) => async (message) => {
-  return io.repeatQuestionTillConditionMet(message, async (line) => {
-    return dictionaryService.isValidWord(line);
-  });
+  return io.repeatQuestionTillConditionMet(
+    message,
+    async (line) => {
+      return dictionaryService.isValidWord(line);
+    },
+    "The word you have entered is not a word we recognize. Please try again.\n"
+  );
 };
 
 const getGuessCountFromIO = (io) => {
