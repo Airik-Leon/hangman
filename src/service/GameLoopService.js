@@ -14,23 +14,38 @@ $Component({
     let failedAttempts = 0;
     let formattedAnswer = null;
 
-    const checkForCorrectnessAndUpdate = (line = "") => {
-      return new Promise((resolve) => {
-        let correctGuess = false;
-        
-        line.split("").forEach((letter) => {
-          formattedAnswer.forEach((val) => {
-            if (letter.toLowerCase() === val.value.toLowerCase()) {
-              val.show = true;
-              correctGuess = true;
+    const getLineChecker = (answer) => ({
+      checkForCorrectnessAndUpdate: (line = "") => {
+        return new Promise((resolve) => {
+          let correctGuess = false;
+
+          const compare = (value) => {
+            value.split("").forEach((letter) => {
+              formattedAnswer.forEach((val) => {
+                if (letter.toLowerCase() === val.value.toLowerCase()) {
+                  val.show = true;
+                  correctGuess = true;
+                }
+              });
+            });
+            resolve(correctGuess);
+          };
+
+          if (line.length > 1) {
+            if (!(answer.toLowerCase() === line.trim().toLowerCase())) {
+              resolve(correctGuess);
+            } else {
+              compare(line);
             }
-          });
+          } else {
+            compare(line);
+          }
         });
-        resolve(correctGuess);
-      });
-    };
+      },
+    });
 
     const start = ({ guessCount = 0, answer = "" }) => {
+      const lineChecker = getLineChecker(answer);
       formattedAnswer = answer.split("").map((val) => ({
         value: val,
         show: false,
@@ -44,13 +59,15 @@ $Component({
           EVENT_SERVICE.publish("refresh", {
             answer: formattedAnswer,
             failedAttempts,
-            maxAttempts: guessCount,
+            maxFailedAttempts: guessCount,
           });
 
           IO_SERVICE.io({
             message: "Guess a letter or a word.\n",
             listener: async (line) => {
-              const isACorrectGuess = await checkForCorrectnessAndUpdate(line);
+              const isACorrectGuess = await lineChecker.checkForCorrectnessAndUpdate(
+                line
+              );
               if (!isACorrectGuess) {
                 failedAttempts = failedAttempts + 1;
               }
@@ -61,7 +78,6 @@ $Component({
           process.exit(0);
         }
       };
-
       repeatIfEndHasNotBeenMet();
     };
     EVENT_SERVICE.subscribe("startGame", start);

@@ -2,6 +2,11 @@ const { $Component } = require("boost_library");
 const fs = require("fs");
 const Interface = require("./Interface");
 
+const exit = (ioservice) => {
+  ioservice.display("Thank you for trying! Goodbye.");
+  process.exit(0);
+};
+
 const showBanner = (ioservice) => {
   ioservice.display(
     new String(fs.readFileSync("./banner.txt"), "utf8").toString()
@@ -20,54 +25,20 @@ const getGreetingMessage = () => {
   `;
 };
 
-const getWordFromIO = (ioservice) => (dictionaryService) => (message) => {
-  return new Promise((resolve) => {
-    const getWordRepeatIfNotValid = (request) => {
-      ioservice.io({
-        message: request,
-        listener: async (line) => {
-          const isValid = await dictionaryService.isValidWord(line);
-          if (isValid) {
-            resolve(line);
-          } else {
-            getWordRepeatIfNotValid(
-              `${line} is not a word we know. Could you please try a different word?\n`
-            );
-          }
-        },
-      });
-    };
-
-    getWordRepeatIfNotValid(message);
+const getWordFromIO = (io) => (dictionaryService) => async (message) => {
+  return io.repeatQuestionTillConditionMet(message, async (line) => {
+    return dictionaryService.isValidWord(line);
   });
 };
 
-const getGuessCountFromIO = (ioservice) => {
-  return new Promise((resolve) => {
-    const getGuessCountRepeatIfNotValid = (request) => {
-      const errorMessage = `The number of guesses must be greater than 0 (zero). Please enter a number?\n`;
-      ioservice.io({
-        message: request,
-        listener: async (line = "0") => {
-          try {
-            const value = parseInt(line.trim());
-            const isValid = value > 0 ? true : false;
-            if (isValid) {
-              resolve(value);
-            } else {
-              getGuessCountRepeatIfNotValid(errorMessage);
-            }
-          } catch (e) {
-            getGuessCountRepeatIfNotValid(errorMessage);
-          }
-        },
-      });
-    };
-
-    getGuessCountRepeatIfNotValid(
-      "How many guesses would you like to allow?\n"
-    );
-  });
+const getGuessCountFromIO = (io) => {
+  return io.repeatQuestionTillConditionMet(
+    "How many guesses would you like to allow?\n",
+    (line) => {
+      return parseInt(line.trim()) > 0 ? true : false;
+    },
+    `The number of guesses must be greater than 0 (zero). Please enter a number?\n`
+  );
 };
 
 const onStartGame = (ioservice) => (eventService) => (dictionaryService) => {
@@ -79,7 +50,6 @@ const onStartGame = (ioservice) => (eventService) => (dictionaryService) => {
         const word = await getWordFromIO(ioservice)(dictionaryService)(
           "Great, Player one would you please select your word.\n"
         );
-
         const guessCount = await getGuessCountFromIO(ioservice);
 
         eventService.publish("startGame", {
@@ -87,8 +57,7 @@ const onStartGame = (ioservice) => (eventService) => (dictionaryService) => {
           guessCount,
         });
       } else {
-        IO_SERVICE.display("Thank you for trying! Goodbye.");
-        process.exit(0);
+        exit(ioservice);
       }
     },
   });
@@ -106,6 +75,7 @@ $Component({
   injector: ({ EVENT_SERVICE, DICTIONARY_SERVICE, IO_SERVICE }) => {
     const run = () => {
       onStartGame(IO_SERVICE)(EVENT_SERVICE)(DICTIONARY_SERVICE);
+      IO_SERVICE.setReservedKeyEvents(".exit", () => exit(IO_SERVICE));
     };
 
     return {
