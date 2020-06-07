@@ -2,8 +2,10 @@ const { $Component } = require("boost_library");
 const fs = require("fs");
 const Interface = require("./Interface");
 
-const showBanner = () => {
-  console.log(new String(fs.readFileSync("./banner.txt"), "utf8").toString());
+const showBanner = (ioservice) => {
+  ioservice.display(
+    new String(fs.readFileSync("./banner.txt"), "utf8").toString()
+  );
 };
 
 const getGreetingMessage = () => {
@@ -69,12 +71,11 @@ const getGuessCountFromIO = (ioservice) => {
 };
 
 const onStartGame = (ioservice) => (eventService) => (dictionaryService) => {
-  showBanner();
+  showBanner(ioservice);
   ioservice.io({
     message: `${getGreetingMessage()}\nWould you like to play (Y/n)?\n`,
     listener: async (line = "") => {
       if (line.toLowerCase() === "y") {
-
         const word = await getWordFromIO(ioservice)(dictionaryService)(
           "Great, Player one would you please select your word.\n"
         );
@@ -85,9 +86,8 @@ const onStartGame = (ioservice) => (eventService) => (dictionaryService) => {
           answer: word,
           guessCount,
         });
-        
       } else {
-        console.log("Thank you for trying! Goodbye.");
+        IO_SERVICE.display("Thank you for trying! Goodbye.");
         process.exit(0);
       }
     },
@@ -103,12 +103,7 @@ $Component({
     Interface.IO_SERVICE,
     Interface.DICTIONARY_SERVICE,
   ],
-  injector: ({
-    GAME_LOOP_SERVICE,
-    EVENT_SERVICE,
-    DICTIONARY_SERVICE,
-    IO_SERVICE,
-  }) => {
+  injector: ({ EVENT_SERVICE, DICTIONARY_SERVICE, IO_SERVICE }) => {
     const run = () => {
       onStartGame(IO_SERVICE)(EVENT_SERVICE)(DICTIONARY_SERVICE);
     };

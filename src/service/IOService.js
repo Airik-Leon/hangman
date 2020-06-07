@@ -9,7 +9,7 @@ $Component({
     const inout = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
-      terminal:true,
+      terminal: true,
     });
 
     const io = ({ message, listener }) => {
@@ -18,8 +18,13 @@ $Component({
       });
     };
 
+    const display = (message) => {
+      console.log(message);
+    };
+
     return {
       io,
+      display,
     };
   },
 });
