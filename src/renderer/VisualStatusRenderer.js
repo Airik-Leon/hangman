@@ -6,11 +6,63 @@ $Component({
   name: "visualstatus.renderer.v1",
   dependencies: [Interface.EVENT_SERVICE, Interface.IO_SERVICE],
   injector: ({ EVENT_SERVICE, IO_SERVICE }) => {
+    const textImages = [
+  `+---+
+  |   |
+      |
+      |
+      |
+      |
+=========`,
+`  +---+
+  |   |
+  O   |
+      |
+      |
+      |
+=========`,
+` +---+
+  |   |
+  O   |
+  |   |
+      |
+      |
+=========`,
+` +---+
+  |   |
+  O   |
+ /|   |
+      |
+      |
+=========`,
+`  +---+
+  |   |
+  O   |
+ /|\\  |
+      |
+      |
+=========`,
+`  +---+
+  |   |
+  O   |
+ /|\\ |
+ /    |
+      |
+=========`,
+`  +---+
+  |   |
+  O   |
+ /|\\  |
+ / \\  |
+      |
+=========`];
+    
     const render = (data) => {
       const status = `Correct: ${
         data.answer.filter((val) => val.show).length
       }/${data.answer.length}\nMissed: ${data.failedAttempts}/${data.maxFailedAttempts}
         `;
+      IO_SERVICE.display(textImages[data.failedAttempts]);
       IO_SERVICE.display(status);
     };
 
