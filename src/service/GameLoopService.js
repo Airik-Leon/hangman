@@ -8,7 +8,7 @@ const displayGameEndReason = (ioservice) => (
 ) => {
   if (failedAttempts >= guesscount) {
     ioservice.display(
-      `Player 2 has reached the number of allowed guesses: ${failedAttempts}/${guesscount}`
+      `Player 2 has reached the number of allowed guesses: ${failedAttempts}/${guesscount}. Sorry you lose.`
     );
   }
 
@@ -20,6 +20,45 @@ const displayGameEndReason = (ioservice) => (
     );
   }
 };
+
+const ifWordIsMatchUseLetterStrategy = (val, answer, letterStrategy) => {
+  const isAMatchingWord = (compare1 = "", compare2 = "") => {
+    const isAMatchingWord =
+      compare1.trim().toLowerCase() === compare2.trim().toLowerCase();
+    if (isAMatchingWord) {
+      return letterStrategy();
+    }
+    return false;
+  };
+
+  if (val.length > 1) {
+    return isAMatchingWord(val, answer);
+  }
+  return letterStrategy();
+};
+
+const getLineChecker = (answer) => (formattedAnswer) => ({
+  checkForCorrectnessAndUpdate: (line = "") => {
+    return new Promise((resolve) => {
+      const compare = (value) => {
+        let correctGuess = false;
+        value.split("").forEach((letter) => {
+          formattedAnswer.forEach((val) => {
+            if (letter.toLowerCase() === val.value.toLowerCase()) {
+              val.show = true;
+              correctGuess = true;
+            }
+          });
+        });
+        return correctGuess;
+      };
+
+      resolve(
+        ifWordIsMatchUseLetterStrategy(line, answer, () => compare(line))
+      );
+    });
+  },
+});
 
 $Component({
   key: Interface.GAME_LOOP_SERVICE,
@@ -35,42 +74,12 @@ $Component({
     let formattedAnswer = null;
     const previousIncorrectChoices = [];
 
-    const getLineChecker = (answer) => ({
-      checkForCorrectnessAndUpdate: (line = "") => {
-        return new Promise((resolve) => {
-          let correctGuess = false;
-
-          const compare = (value) => {
-            value.split("").forEach((letter) => {
-              formattedAnswer.forEach((val) => {
-                if (letter.toLowerCase() === val.value.toLowerCase()) {
-                  val.show = true;
-                  correctGuess = true;
-                }
-              });
-            });
-            resolve(correctGuess);
-          };
-
-          if (line.length > 1) {
-            if (!(answer.toLowerCase() === line.trim().toLowerCase())) {
-              resolve(correctGuess);
-            } else {
-              compare(line);
-            }
-          } else {
-            compare(line);
-          }
-        });
-      },
-    });
-
     const start = ({ guessCount = 0, answer = "" }) => {
-      const lineChecker = getLineChecker(answer);
       formattedAnswer = answer.split("").map((val) => ({
         value: val,
         show: false,
       }));
+      const lineChecker = getLineChecker(answer)(formattedAnswer);
 
       const repeatIfEndHasNotBeenMet = () => {
         if (

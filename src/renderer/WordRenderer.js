@@ -6,7 +6,12 @@ $Component({
   name: "worddisplay.renderer.v1",
   dependencies: [Interface.EVENT_SERVICE, Interface.IO_SERVICE],
   injector: ({ EVENT_SERVICE, IO_SERVICE }) => {
-    const render = (data) => {
+    const render = (
+      data = {
+        answer: [],
+        previousIncorrectChoices: [],
+      }
+    ) => {
       const word = data.answer
         .map((letter) => {
           if (letter.show) {
@@ -16,7 +21,9 @@ $Component({
         })
         .join(" ");
       IO_SERVICE.display(word);
-      IO_SERVICE.display(`Previous guesses: ${data.previousIncorrectChoices.join(", ")}\n`);
+      IO_SERVICE.display(
+        `Previous wrong guesses:\n${data.previousIncorrectChoices.join(", ")}\n`
+      );
     };
 
     EVENT_SERVICE.subscribe("refresh", render);

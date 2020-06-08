@@ -13,19 +13,6 @@ const showBanner = (ioservice) => {
   );
 };
 
-//TODO: Move to readme. 
-// const getGreetingMessage = () => {
-//   return `Hangman is a 2 player game where the first player chooses a word & number of guesses and the second player must attempt to guess the word before they reach the number of guesses.
-
-//   \n - Player one please choose a guess count greater than 0. 
-//   \n - Player one please choose a word that exist in a common dictionary.
-  
-//   \n - Player 2 may either guess an individual letter or attempt to guess a whole word.
-//   \n - If Player 2 guesses the whole word then Player 2 wins. 
-//   \n - If Player 2 guesses a letter then that will reveal all the matching letters for that word. 
-//   `;
-// };
-
 const getWordFromIO = (io) => (dictionaryService) => async (message) => {
   return io.repeatQuestionTillConditionMet(
     message,
