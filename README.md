@@ -21,7 +21,7 @@
 
   <ol>
      <li>Using Git you can clone the project down via <code>https://github.com/Airik-Leon/hangman.git</code></a></li>
-     <li>Install Node LTS <a href"https://nodejs.org/en/download/">here</a></li>
+     <li>Install Node LTS <code>https://nodejs.org/en/download/</code></li>
      <li>Navigate to the respective download location and inside the project hangman run <code>npm start</code></li>
      <li>At this point you can follow the command line prompts</li>
   </ol>
