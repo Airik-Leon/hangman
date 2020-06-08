@@ -21,6 +21,7 @@ const displayGameEndReason = (ioservice) => (
   }
 };
 
+//TODO: Candidate for externalized component
 const ifWordIsMatchUseLetterStrategy = (val, answer, letterStrategy) => {
   const isAMatchingWord = (compare1 = "", compare2 = "") => {
     const isAMatchingWord =
@@ -37,6 +38,7 @@ const ifWordIsMatchUseLetterStrategy = (val, answer, letterStrategy) => {
   return letterStrategy();
 };
 
+//TODO: Candidate for externalized component
 const getLineChecker = (answer) => (formattedAnswer) => ({
   checkForCorrectnessAndUpdate: (line = "") => {
     return new Promise((resolve) => {
