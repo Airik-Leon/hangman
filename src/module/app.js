@@ -25,17 +25,6 @@ const getWordFromIO = (io) => (dictionaryService) => async (message) => {
   );
 };
 
-//TODO: Candidate for externalized Menu component
-const getGuessCountFromIO = (io) => {
-  return io.repeatQuestionTillConditionMet(
-    "How many guesses would you like to allow?\n",
-    (line) => {
-      return parseInt(line.trim()) > 0 ? true : false;
-    },
-    `The number of guesses must be greater than 0 (zero). Please enter a number?\n`
-  );
-};
-
 const onStartGame = (ioservice) => (eventService) => (dictionaryService) => {
   showBanner(ioservice);
   ioservice.io({
@@ -45,11 +34,9 @@ const onStartGame = (ioservice) => (eventService) => (dictionaryService) => {
         const word = await getWordFromIO(ioservice)(dictionaryService)(
           "Great, Player one would you please select your word.\n"
         );
-        const guessCount = await getGuessCountFromIO(ioservice);
-
         eventService.publish("startGame", {
           answer: word,
-          guessCount,
+          guessCount: 6,
         });
       } else {
         exit(ioservice);
