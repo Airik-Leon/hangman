@@ -7,12 +7,14 @@ const exit = (ioservice) => {
   process.exit(0);
 };
 
+//TODO: Candidate for externalized Menu component
 const showBanner = (ioservice) => {
   ioservice.display(
     new String(fs.readFileSync("./banner.txt"), "utf8").toString()
   );
 };
 
+//TODO: Candidate for externalized Menu component
 const getWordFromIO = (io) => (dictionaryService) => async (message) => {
   return io.repeatQuestionTillConditionMet(
     message,
@@ -23,6 +25,7 @@ const getWordFromIO = (io) => (dictionaryService) => async (message) => {
   );
 };
 
+//TODO: Candidate for externalized Menu component
 const getGuessCountFromIO = (io) => {
   return io.repeatQuestionTillConditionMet(
     "How many guesses would you like to allow?\n",

@@ -21,7 +21,7 @@ const displayGameEndReason = (ioservice) => (
   }
 };
 
-//TODO: Candidate for externalized component
+//TODO: Candidate for externalized Word validator component
 const ifWordIsMatchUseLetterStrategy = (val, answer, letterStrategy) => {
   const isAMatchingWord = (compare1 = "", compare2 = "") => {
     const isAMatchingWord =
